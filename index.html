@@ -74,13 +74,14 @@
     <div id="filters">
         <span id="http"><label><input id="httpCheckbox" type="checkbox" name="http" checked>http/https only?</label></span>
         <span id="taobaoFilter"><label><input id="taobaoCheckbox" type="checkbox" name="taobao" onclick="taobaoChecked()">Convert Taobao links</label></span>
-        <span id="keyword">Filter by Keyword: <input id="filter" type="text" name="filter" placeholder="Your keyword."></span>
+        <br id="filter-break" style="display:none;">
+        <span id="keyword"><label>Filter by Keyword: <input id="filter" type="text" name="filter" placeholder="Your keyword."></label></span>
     </div>
 
     <div id="actions">
         <button id="reset" onclick="reset()">Reset</button>
-        <div id="message"></div>
         <button id="convert" onclick="extract()">Extract</button>
+        <div id="message"></div>
     </div>
 
     <p class="smaller">
