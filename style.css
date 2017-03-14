@@ -57,6 +57,11 @@ textarea {
     resize: none;
     margin-bottom: 5px;
     padding: 8px 8px;
+    border: 2px solid #cccccc;
+}
+
+input[type="text"] {
+    border: 2px solid #cccccc;
 }
 
 button {
@@ -169,4 +174,85 @@ button#convert:hover {
 
 .link {
     display: block;
+}
+
+@media (max-width: 580px) {
+    body {
+        background-color: white;
+        margin: 0 0;
+    }
+
+    #wrapper {
+        width: 92.5%;
+        margin: 0 0;
+        border-radius: 0;
+        padding: 20px;
+    }
+
+    textarea {
+        width: 90%;
+        height: 150px;
+    }
+
+    #url {
+        width: 92.5%;
+    }
+
+    #keyword {
+        float: left;
+    }
+
+    h1 {
+        margin-top: 0;
+        font-size: 30px;
+    }
+
+    input[type="text"] {
+        font-size: 16px !important;
+    }
+
+    p {
+        font-size: 15px;
+    }
+
+    #filters {
+        margin-top: 5px;
+    }
+
+    #filter {
+        padding: 4px 8px;
+    }
+
+    #keyword {
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    #filter-break {
+        display: block !important;
+    }
+
+    .github-corner {
+        display: none;
+    }
+
+    hr {
+        width: 98%;
+    }
+
+    #message {
+        margin-bottom: 20px;
+        float: left;
+        width: 100%;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px !important;
+        width: 45% !important;
+    }
+
+    .smaller {
+        margin-top: 0;
+    }
 }
