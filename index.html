@@ -63,25 +63,26 @@
 
     <div id="urlText">
         <p class="intro">Extract by URL: </p>
-        <input id="url" type="text" name="url" placeholder="e.g. https://google.com.au" onclick="boxClicked(true)">
+        <input id="url" class="boxsizingBorder" type="text" name="url" placeholder="e.g. https://google.com.au" onclick="boxClicked(true)">
         <img id="loading" src="loading.gif" class="hidden">
     </div>
 
     <form>
         <p class="intro">Extract by HTML: </p>
-        <textarea id="content" placeholder="Enter your HTML here." onclick="boxClicked(false)"></textarea>
+        <textarea id="content" class="boxsizingBorder" placeholder="Enter your HTML here." onclick="boxClicked(false)"></textarea>
     </form>
 
     <div id="filters">
         <span id="http"><label><input id="httpCheckbox" type="checkbox" name="http" checked>http/https only?</label></span>
+        <br class="filter-break-sm" style="display:none;">
         <span id="taobaoFilter"><label><input id="taobaoCheckbox" type="checkbox" name="taobao" onclick="taobaoChecked()">Convert Taobao links</label></span>
-        <br id="filter-break" style="display:none;">
-        <span id="keyword"><label>Filter by Keyword: <input id="filter" type="text" name="filter" placeholder="Your keyword."></label></span>
+        <br class="filter-break" style="display:none;">
+        <span id="keyword"><label>Filter by Keyword: <input id="filter" class="boxsizingBorder" type="text" name="filter" placeholder="Your keyword."></label></span>
     </div>
 
     <div id="actions">
-        <button id="reset" onclick="reset()">Reset</button>
-        <button id="convert" onclick="extract()">Extract</button>
+        <button id="reset" class="boxsizingBorder" onclick="reset()">Reset</button>
+        <button id="convert" class="boxsizingBorder" onclick="extract()">Extract</button>
         <div id="message"></div>
     </div>
 
