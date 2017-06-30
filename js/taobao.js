@@ -1,138 +1,153 @@
 /**
- * The JavaScript for everything :)
+ * Helper class that does all the calculations and converting. All UI element
+ * interactions are handled in 'preparer.js'
  */
-function convertTaobao(links) {
+const ITEM_ID = 'id=';
+const ITEM = 'item/';
+const SHOP_ID = 'shop_id=';
+const TAOBAO_URL = 'https://item.taobao.com/item.htm?id=';
+const TMALL_URL = 'https://detail.tmall.com/item.htm?id=';
+const SHOP_URL = 'https://shop{}.taobao.com';
+const M_INTL = 'm.intl.taobao.com';
+const H5 = 'h5.m.taobao.com';
+const WORLD = 'world.taobao.com';
+const SHOP_M = 'shop.m.taobao.com';
+const SEARCH_QUERY = '/search.htm?search=y';
+
+/**
+ * Given an array of URLs, separate them into valid and invalid ones, convert them and return
+ */
+function convertURLs(urls) {
+    // Initialise our empty arrays
     var validLinks = [];
-    // Go through given links, convert and add to relevant array
-    for (var i = 0; i < links.length; i++) {
-        var current = links[i];
-        if (isTaobaoURL(current)) {
-            // Convert URL based on type and clean it up
-            validLinks.push(cleanURL(convertURL(current)));
-        }
-    }
-    return validLinks;
+    var invalidLinks = [];
+
+    // Go through each element of the parameter array and convert as required
+    urls.forEach(function (url) {
+        if (isTaobaoURL(url))
+            validLinks.push(convertURL(url));
+        else
+            invalidLinks.push(url);
+    });
+
+    // Return object containing our valid links and invalid links array
+    return {
+        valid: validLinks,
+        invalid: invalidLinks
+    };
 }
 
-function isValidURL(str) {
-    var pattern = new RegExp('^(https?:\\/\\/)?'+
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+
-        '(\\#[-a-z\\d_]*)?$','i');
-    return pattern.test(str);
-}
 
-/* Checks if string is valid URL and that it contains 'taobao.com' */
-function isTaobaoURL(str) {
-    var urlPattern = new RegExp('^(https?:\\/\\/)?'+
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+
-        '(\\#[-a-z\\d_]*)?$','i');
-    return urlPattern.test(str) && str.indexOf('taobao.com') != -1;
-}
-
-/* Converts the Taobao URL */
+/**
+ * Given a valid, Taobao url we convert it into Chinese mainland form
+ */
 function convertURL(str) {
-    if (str.indexOf('m.intl.taobao.com') != -1) {
-        // General mobile item
-        return str.replace('m.intl', 'item').replace('detail/detail', 'item').replace('detail/desc', 'item');
-    } else if (str.indexOf('h5.m.taobao.com') != -1) {
-        // Mobile app item, substring to get item ID and build new URL
-        var start = str.indexOf('?id=') + 4;
-        // Default end just length of url, loop to find alternatives
-        var end = str.length;
-        for (var i = start; i < str.length; i++) {
-            if (!isDigit(str.charAt(i))) {
-                end = i;
-                break;
-            }
-        }
-        var item_id = str.substring(start, end);
-        return "https://item.taobao.com/item.htm?id=" + item_id;
-    } else if (str.indexOf('m.taobao.com') != -1) {
-        if (str.indexOf('shop.m.taobao.com') != -1) {
-            // Weird mobile stores - e.g. shop.m.taobao.com/shop/....shop_id
-            var start = str.indexOf('shop_id=') + 8;
-            // Default end is length of URL
-            var end = str.length;
-            // Go through rest of URL, stop when we find non-digit
-            for (var i = start; i < str.length; i++) {
-                if (!isDigit(str.charAt(i))) {
-                    end = i;
-                    break;
-                }
-            }
-            var shopID = str.substring(start, end);
-            return 'https://shop' + shopID + '.taobao.com';
-        } else if (str.indexOf('item') == -1) {
-            // Most mobile stores
-            return str.replace('m.taobao', 'taobao');
+    // Handle tmall world link
+    if (contains(str, 'tmall.com'))
+        return TMALL_URL + getID(str, ITEM_ID);
+
+    // Handle Taobao links
+    if (contains(str, M_INTL) || contains(str, H5)) {
+        // Normal international or H5 app link
+        return buildTaobaoURL(str, ITEM_ID, false)
+    } else if (contains(str, WORLD)) {
+        // world.taobao.com link
+        if (contains(str, 'item')) {
+            // World item
+            return buildTaobaoURL(str, ITEM, false);
         } else {
-            // Already valid Taobao URL
-            var start = str.indexOf('id=') + 3;
-            // Default end is length of URL
-            var end = str.length;
-            // Go through rest of URL, stop when we find non-digit
-            for (var i = start; i < str.length; i++) {
-                if (!isDigit(str.charAt(i))) {
-                    end = i;
-                    break;
-                }
-            }
-            var id = str.substring(start, end);
-            return 'https://item.taobao.com/item.htm?id=' + id;
+            // World store
+            var intermediate = str.replace('world.taobao.com', 'taobao.com');
+            return cleanTaobaoStore(intermediate);
         }
-    } else if (str.indexOf('world.taobao.com') != -1) {
-        if (str.indexOf('item') != -1) {
-            // World item, we substring to get the item ID and then build the new URL
-            var start = str.indexOf('item/') + 5;
-            var end = str.indexOf('.htm');
-            var itemID = str.substring(start, end);
-            return 'https://item.taobao.com/item.htm?id=' + itemID;
-        } else {
-            // General world store
-            return str.replace('world.taobao', 'taobao');
-        }
+    } else if (contains(str, SHOP_M)) {
+        // Mobile shop with shop ID
+        return buildTaobaoURL(str, SHOP_ID, true);
+    } else if (!contains(str, 'item')) {
+        // Clean the store link, remove any redundant information, and conevrt from mobile if relevant
+        // str.replace('m.taobao.com', 'taobao.com'); // MOBILE STORE
+        return cleanTaobaoStore(str);
     } else {
-        // Already valid Taobao URL
-        var start = str.indexOf('id=') + 3;
-        // Default end is length of URL
-        var end = str.length;
-        // Go through rest of URL, stop when we find non-digit
-        for (var i = start; i < str.length; i++) {
-            if (!isDigit(str.charAt(i))) {
-                end = i;
-                break;
-            }
-        }
-        var id = str.substring(start, end);
-        return 'https://item.taobao.com/item.htm?id=' + id;
+        // Already valid Taobao URL, canonacalise it
+        return buildTaobaoURL(str, 'id=', false);
     }
 }
 
-/* Cleans up a URL - FIXME THIS IS REALLY BAD! */
-function cleanURL(str) {
-    var builder = '';
-    var encounteredQuestion = false;
-    for (var j = 0; j < str.length; j++) {
-        if (str.charAt(j) == '?' && encounteredQuestion) {
-            builder += '&';
-        } else if (str.charAt(j) == '?') {
-            builder += '?';
-            encounteredQuestion = true;
-        } else {
-            builder += str.charAt(j);
+
+/**
+ * Given a string URL and a query we want to match, get the ID which is numeric only
+ */
+function getID(str, match) {
+    var start = str.indexOf(match) + match.length;
+    var end = str.length;
+    for (var i = start; i < str.length; i++) {
+        if (!isDigit(str.charAt(i))) {
+            end = i;
+            break;
         }
     }
-    return builder;
+    return str.substring(start, end);
 }
 
-/* Check if char is digit */
+
+/**
+ * Given a string, and query we want to match, we find, replace and return
+ */
+function buildTaobaoURL(str, match, isShop) {
+    if (isShop) {
+        var shopID = getID(str, match);
+        return SHOP_URL.replace('{}', shopID);
+    } else {
+        var itemID = getID(str, match);
+        return TAOBAO_URL + itemID;
+    }
+}
+
+/**
+ * Clean a Taobao store search
+ */
+function cleanTaobaoStore(str) {
+    // Check if there are additional useless information variables
+    var end = str.indexOf('taobao.com/');
+    if (end == -1) {
+        return str;
+    } else {
+        end += 10;
+        if (contains(str, 'search.htm'))
+            return str.substring(0, end) + SEARCH_QUERY;
+        else
+            return str.substring(0, end);
+    }
+}
+
+
+/**
+ * Given a string, we check and return if it is a valid Taobao URL or not
+ */
+function isTaobaoURL(str) {
+    // Define our Regex pattern and test the string
+    var urlPattern = new RegExp('^(https?:\\/\\/)?' +
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+        '((\\d{1,3}\\.){3}\\d{1,3}))' +
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+        '(\\?[;&a-z\\d%_.~+=-]*)?' +
+        '(\\#[-a-z\\d_]*)?$', 'i');
+    return urlPattern.test(str) && (str.indexOf('taobao.com') != -1 || str.indexOf('tmall.com') != -1);
+}
+
+
+/**
+ * Given a string and a query parameter, we check if the string contains that query
+ */
+function contains(str, query) {
+    return str.indexOf(query) != -1;
+}
+
+
+/**
+ * Given a character, check whether it is a digit or not by converting to ASCII code
+ */
 function isDigit(char) {
-    return char == '0' || char == '1' || char == '2' || char == '3' || char == '4' ||
-        char == '5' || char == '6' || char == '7' || char == '8' || char == '9';
+    char = char.charCodeAt(0);
+    return char >= 48 && char <= 57;
 }

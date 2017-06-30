@@ -1,0 +1,180 @@
+h4 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+hr {
+    border-color: #f6f6f6;
+}
+
+p {
+    margin: 10px 0;
+}
+
+textarea {
+    height: 30vh;
+    padding: 5px;
+    font-size: 14px;
+}
+
+input {
+    font-size: 13px;
+}
+
+.wrapper {
+    margin-bottom: 5vh;
+}
+
+.invisible {
+    display: none !important;
+}
+
+.hidden {
+    display: none;
+}
+
+#readMore a, #help a {
+    cursor: pointer;
+}
+
+#url {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#filters {
+    margin: 5px 0;
+}
+
+#filters * {
+    display: inline-block;
+    padding: 3px 0;
+}
+
+#taobaoFilter {
+    margin-left: 15px;
+}
+
+#keyword {
+    margin-left: 15px;
+    float: right;
+}
+
+#filter {
+    border: 1px solid grey;
+    width: 125px;
+    padding: 2px;
+}
+
+#valid-content a {
+    font-size: 16px;
+}
+
+#message {
+    display: block;
+    margin: 10px 0;
+}
+
+#loading {
+    width: 50px;
+}
+
+#bottom-link {
+    position: fixed;
+    left: calc(100% - 100px);
+    top: calc(100% - 80px);
+    border-radius: 5px;
+    height: 45px;
+    width: 45px;
+    background-color: #3D5AFE;
+    color: white;
+    font-weight: 600;
+    line-height: 35px;
+    font-size: 30px;
+    text-align: center;
+}
+
+#bottom-link:hover {
+    text-decoration: none;
+    opacity: 0.95;
+    transition: 0.3s;
+}
+
+@media (max-width: 720px) {
+    #keyword {
+        margin-left: 0;
+        float: none;
+        display: block;
+    }
+
+    #filter {
+        width: 200px;
+    }
+
+    #message {
+        display: block !important;
+        float: left;
+        width: 100%;
+    }
+
+    #bottom-link {
+        left: calc(100% - 60px);
+        top: calc(100% - 60px);
+        height: 40px;
+        width: 40px;
+        line-height: 30px;
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 450px) {
+    #reset, #convert {
+        width: 48.5% !important;
+    }
+
+    h4 {
+        margin-top: 15px;
+    }
+
+    textarea {
+        height: 20vh;
+    }
+
+    #taobaoFilter {
+        margin-left: 0;
+        float: right;
+    }
+
+    input#httpCheckbox, input#taobaoCheckbox {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 410px) {
+    h4 {
+        margin-top: 10px;
+    }
+
+    #filters {
+        margin-bottom: 10px;
+    }
+
+    #filters * {
+        padding: 2px 0;
+    }
+
+    #taobaoFilter {
+        display: block;
+        float: none;
+    }
+
+    #filter {
+        font-size: 14px;
+        width: 100%;
+        margin-top: 5px;
+        padding: 3px;
+    }
+}
