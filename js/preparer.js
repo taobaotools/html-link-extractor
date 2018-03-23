@@ -122,8 +122,8 @@ function setComponents() {
     }
 
     // Set components
-    setHTML('valid-content', html + link_html.join(''));
-    setHTML('valid-hidden', link_html.join(''));
+    setHTML('valid-content', html + link_html.join('<br>'));
+    setHTML('valid-hidden', link_html.join('<br>'));
 }
 
 
